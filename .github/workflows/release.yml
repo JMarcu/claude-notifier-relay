@@ -9,7 +9,6 @@ on:
 permissions:
   contents: write
   packages: write
-  pull-requests: write
 
 jobs:
   build-binaries:
@@ -42,4 +41,5 @@ jobs:
         with:
           publish-features: "true"
           base-path-to-features: "./src"
-          generate-docs: "true"
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
