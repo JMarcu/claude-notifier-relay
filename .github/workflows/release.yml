@@ -1,0 +1,44 @@
+name: Release
+
+on:
+  push:
+    branches: [main]
+    paths: ["src/**", "cmd/**", "go.mod"]
+  workflow_dispatch:
+
+permissions:
+  contents: write
+  packages: write
+
+jobs:
+  build-binaries:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-go@v5
+        with:
+          go-version: "1.22"
+      - name: Build static binaries
+        run: |
+          mkdir -p src/cn-relay/bin
+          GOOS=linux GOARCH=amd64 CGO_ENABLED=0 go build -o src/cn-relay/bin/cn-relay-linux-amd64 ./cmd/cn-relay
+          GOOS=linux GOARCH=arm64 CGO_ENABLED=0 go build -o src/cn-relay/bin/cn-relay-linux-arm64 ./cmd/cn-relay
+      - uses: actions/upload-artifact@v4
+        with:
+          name: cn-relay-binaries
+          path: src/cn-relay/bin
+
+  publish:
+    needs: build-binaries
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/download-artifact@v4
+        with:
+          name: cn-relay-binaries
+          path: src/cn-relay/bin
+      - uses: devcontainers/action@v1
+        with:
+          publish-features: "true"
+          base-path-to-features: "./src"
+          generate-docs: "true"

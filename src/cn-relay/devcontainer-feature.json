@@ -1,0 +1,19 @@
+{
+  "id": "cn-relay",
+  "version": "1.0.0",
+  "name": "Claude Notifier Relay",
+  "description": "Relays the Claude Notifier extension's remoteAudio push (always 127.0.0.1:<port>, hardcoded by the extension) to a target host, so notifications work from inside a dev container without a sidecar container.",
+  "options": {
+    "port": {
+      "type": "string",
+      "default": "47291",
+      "description": "Loopback port to listen on. Must match the claudeNotifier.remoteAudio.port VS Code setting."
+    },
+    "targetHost": {
+      "type": "string",
+      "default": "host.docker.internal",
+      "description": "Host to forward connections to, e.g. host.docker.internal, or a centralized relay's hostname on a shared Docker network."
+    }
+  },
+  "entrypoint": "/usr/local/share/cn-relay/entrypoint.sh"
+}
